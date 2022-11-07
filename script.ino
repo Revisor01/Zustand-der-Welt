@@ -26,17 +26,17 @@ int plus5[] = {255, 0, 128};
 //NeoPixel als "pixels" instanziieren
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(leds, ledPin, NEO_GRB + NEO_KHZ800);
 
-const char* ssid = "Pavillon der Intelligenz";
-const char* password =  "salami13";
+const char* ssid = "WLAN-SSID";
+const char* password =  "WLAN-PASSWORD";
 WiFiClient wifiClient;
 
 PubSubClient mqttClient(wifiClient);
 
 const char* clientID = "Moodlicht";
-const char* mqtt_server = "192.168.0.79";
+const char* mqtt_server = "MQTT-IP";
 const int mqtt_port = 1883;
-const char* mqtt_user = "simon";
-const char* mqtt_password = "salami13";
+const char* mqtt_user = "MQTT_USER";
+const char* mqtt_password = "MQTT-PASSWORD";
 char out[384];
 
 String article;
@@ -44,9 +44,9 @@ int sentiment = 0;
 AsyncWebServer server(80);
 
 void connectToMQTT() {
- mqttClient.setServer("192.168.0.79", 1883);//MQTT Server, - Port
+ mqttClient.setServer("MQTT-IP", 1883);//MQTT Server, - Port
   mqttClient.setBufferSize(512);
-  if (mqttClient.connect("Moodlicht" , "simon", "salami13")) {
+  if (mqttClient.connect("Moodlicht" , "MQTT-USER", "MQTT-PASSWORD")) {
     Serial.println("MQTT verbunden");
     WebSerial.println("MQTT verbunden");
   }
@@ -56,7 +56,7 @@ void getSentiment() {
   sentiment = 0;
   HTTPClient http;
   WiFiClient clientt;
-  http.begin(clientt, "http://api.meaningcloud.com/sentiment-2.1&key=789f51b3eab277927b43542b3aa13ceb&of=json&lang=de&txt=" + article);
+  http.begin(clientt, "http://api.meaningcloud.com/sentiment-2.1&key=API-TOKEN&of=json&lang=de&txt=" + article);
 
 
   int httpCode = http.GET();
@@ -151,7 +151,7 @@ void loop() {
     HTTPClient http;
     WiFiClient clientt;
 
-  http.begin(clientt, "http://newsapi.org/v2/top-headlines?country=de&apiKey=20350a84526748868acbb5daf9d5b7d3");
+  http.begin(clientt, "http://newsapi.org/v2/top-headlines?country=de&apiKey=API_TOKEN");
 
     int httpCode = http.GET();
 
