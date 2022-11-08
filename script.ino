@@ -1,48 +1,58 @@
 //Bibliothek einbinden
-#include <Adafruit_NeoPixel.h>
-#include <ArduinoJson.h>
-#include <WiFi.h>
-#include <HTTPClient.h>
-#include <ESPAsyncWebServer.h>
-#include <WebSerial.h>
-#include <PubSubClient.h>
+#include <Adafruit_NeoPixel.h> //Bibliothek für LED Ring (benötigt)
+#include <ArduinoJson.h> //Bibliothek für JSON (Nachrichten & MQTT) (benötigt)
+#include <WiFi.h> //(benötigt)
+#include <HTTPClient.h> //(benötigt)
+#include <ESPAsyncWebServer.h> //Bibliothek für WebServer zur Einsicht der Wertungen
+#include <WebSerial.h> //Bibliothek für Webserver Oberfläche zur Einsicht der Wertungen
+#include <PubSubClient.h> //Bibliothek für MQTT
 
 int leds = 16; //Anzahl der LEDs
-int ledPin = 15; //Pin, an dem der NeoPixel angeschlossen ist
+int ledPin = 15; //GPIO Pin, an dem der NeoPixel auf dem ESP32 Board angeschlossen ist
 
-//Farben
+//Farben (Immer zwei Farben sind zusammengefasst. So ensteht aktuell eine 7er Skala. Alternativ kann auch eine 11er Skala gewählt werden. Dazu müssen die Farbwerte angepasst werden
 int minus5[] = {168, 0, 0};
-int minus4[] = {251, 100, 0}; //255, 80, 0
+int minus4[] = {251, 100, 0}; //11er Skala: 255, 80, 0
 int minus3[] = {251, 100, 0};
 int minus2[] = {255, 196, 0};
-int minus1[] = {255, 196, 0}; //0, 255, 230
+int minus1[] = {255, 196, 0}; //11er Skala: 0, 255, 230
 int neutral[] = {98, 186, 39};
-int plus1[] = {51, 66, 196}; // 0, 100, 255
+int plus1[] = {51, 66, 196}; //11er Skala: 0, 100, 255
 int plus2[] = {51, 66, 196};
-int plus3[] = {147, 98, 196}; // 150 0 255
-int plus4[] = {147, 98, 196}; // 220 0 255
+int plus3[] = {147, 98, 196}; //11er Skala: 150, 0, 255
+int plus4[] = {147, 98, 196}; //11er Skala: 220, 0, 255
 int plus5[] = {255, 0, 128};
 
 //NeoPixel als "pixels" instanziieren
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(leds, ledPin, NEO_GRB + NEO_KHZ800);
 
+//WLAN Einstellungen hier vornehmen
 const char* ssid = "WLAN-SSID";
 const char* password =  "WLAN-PASSWORD";
+
+//WiFiClienten benennen
 WiFiClient wifiClient;
 
+//Netwerkschnittelle für MQTT auf Wifi festlegen
 PubSubClient mqttClient(wifiClient);
 
+//MQTT Werte festlegen
 const char* clientID = "Moodlicht";
 const char* mqtt_server = "MQTT-IP";
 const int mqtt_port = 1883;
 const char* mqtt_user = "MQTT_USER";
 const char* mqtt_password = "MQTT-PASSWORD";
+
+//MQTT Nachricht --> JSON to MQTT
 char out[384];
 
 String article;
 int sentiment = 0;
+
+//Webserver starten für Einsicht der Werte
 AsyncWebServer server(80);
 
+//MQTT Login festlegen
 void connectToMQTT() {
  mqttClient.setServer("MQTT-IP", 1883);//MQTT Server, - Port
   mqttClient.setBufferSize(512);
