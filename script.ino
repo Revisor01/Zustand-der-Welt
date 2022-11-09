@@ -7,10 +7,13 @@
 #include <WebSerial.h> //Bibliothek für Webserver Oberfläche zur Einsicht der Wertungen
 #include <PubSubClient.h> //Bibliothek für MQTT
 
+// Allgemeine Einstellungen vornhemen
+
+// LEDs und Steuerungspin festlegen
 int leds = 16; //Anzahl der LEDs
 int ledPin = 15; //GPIO Pin, an dem der NeoPixel auf dem ESP32 Board angeschlossen ist
 
-//Farben (Immer zwei Farben sind zusammengefasst. So ensteht aktuell eine 7er Skala. Alternativ kann auch eine 11er Skala gewählt werden. Dazu müssen die Farbwerte angepasst werden
+//Farben festlegen (Immer zwei Farben sind zusammengefasst. So ensteht aktuell eine 7er Skala. Alternativ kann auch eine 11er Skala gewählt werden. Dazu müssen die Farbwerte angepasst werden
 int minus5[] = {168, 0, 0};
 int minus4[] = {251, 100, 0}; //11er Skala: 255, 80, 0
 int minus3[] = {251, 100, 0};
@@ -26,33 +29,36 @@ int plus5[] = {255, 0, 128};
 //NeoPixel als "pixels" instanziieren
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(leds, ledPin, NEO_GRB + NEO_KHZ800);
 
-//WLAN Einstellungen hier vornehmen
+//WLAN Einstellungen vornehmen
 const char* ssid = "WLAN-SSID";
 const char* password =  "WLAN-PASSWORD";
 
-//WiFiClienten benennen
+//WiFiClienten instanziieren
 WiFiClient wifiClient;
 
 //Netwerkschnittelle für MQTT auf Wifi festlegen
 PubSubClient mqttClient(wifiClient);
 
-//MQTT Werte festlegen
+//MQTT Verbindungseinstellungen vornehmen
 const char* clientID = "Moodlicht";
 const char* mqtt_server = "MQTT-IP";
 const int mqtt_port = 1883;
 const char* mqtt_user = "MQTT_USER";
 const char* mqtt_password = "MQTT-PASSWORD";
 
-//MQTT Nachricht --> JSON to MQTT
+//MQTT Nachricht Zwischenspeichergröße definieren
 char out[384];
 
+//Grundwert der Zustandsanalyse festlegen
 String article;
 int sentiment = 0;
 
-//Webserver starten für Einsicht der Werte
+//Webserver für Einsicht der Bewertungen starten
 AsyncWebServer server(80);
 
-//MQTT Login festlegen
+}
+
+//Funktion MQTT Serververbindung (WERTE anpassen). Wird später im Loop aufgerufen.
 void connectToMQTT() {
  mqttClient.setServer("MQTT-IP", 1883);//MQTT Server, - Port
   mqttClient.setBufferSize(512);
@@ -60,8 +66,8 @@ void connectToMQTT() {
     Serial.println("MQTT verbunden");
     WebSerial.println("MQTT verbunden");
   }
-}
 
+//Funktion für die Bewertung der Nachrichten. Wird später im Loop aufgerufen.
 void getSentiment() {
   sentiment = 0;
   HTTPClient http;
@@ -92,7 +98,8 @@ void getSentiment() {
 
     Serial.println(score_tag);
     WebSerial.println("Analyse: " + score_tag);
-
+   
+//Punkte für Bewertungen festlegen
     if (score_tag == "P+") {
       sentiment += 3;
     }
@@ -114,6 +121,7 @@ void getSentiment() {
   http.end();
 }
 
+//Allgemeine Einstellungen anwenden
 void setup() {
  
   pixels.begin();
@@ -133,6 +141,7 @@ void setup() {
   WebSerial.begin(&server);
   server.begin();
 
+ //MQTT Nachricht definieren
   StaticJsonDocument<384> doc;
 
   doc["name"] = "Zustand der Welt";
@@ -152,8 +161,10 @@ void setup() {
   device_connections_0.add("7C9EBD371680");
   
   serializeJson(doc, out);
-Serial.println(out);
+  Serial.println(out);
 }
+
+ //Wiederkehrende Funktion. Alles was hier steht wird alle 30 Minuten durchgeführt.
 void loop() {
 
   if ((WiFi.status() == WL_CONNECTED)) {
@@ -185,7 +196,7 @@ void loop() {
 
       //Durch Überschriften loopen und Wertung abrufen
       for (int i = 0; i < 15; i++) {        
-        //Überschriftn von NewsAPI holen
+        //Überschriften von NewsAPI holen
         JsonArray articles = doc["articles"];
 
         JsonObject articles_number = articles[i];
@@ -205,16 +216,19 @@ void loop() {
       Serial.println(sentiment);
       WebSerial.println("Zustand der Welt:");
       WebSerial.println(sentiment);
+     
+      //MQTT Geräte verbinden und Standardwerte schicken
       connectToMQTT();
       mqttClient.publish("Moodlicht/status", "online", true);
       mqttClient.publish("homeassistant/sensor/Moodlicht/zustandderwelt/config", out, true);
       
-      //Ergebnis an LED geben
+      //Ergebnis der Analyse via LED und MQTT ausgeben
       if (sentiment <= -5) {
         for (int i = 0; i < 16; i++) {
           pixels.setPixelColor(i, minus5[0], minus5[1], minus5[2]);
           pixels.setBrightness(255);
           pixels.show();
+          //MQTT Zustand der Welt Wert schicken
           mqttClient.publish("Moodlicht/zustandderwelt", "-5", true);
         }
       } else if (sentiment >= 5) {
@@ -222,6 +236,7 @@ void loop() {
           pixels.setPixelColor(i, plus5[0], plus5[1], plus5[2]);
           pixels.setBrightness(255);
           pixels.show();
+         //MQTT Zustand der Welt Wert schicken
           mqttClient.publish("Moodlicht/zustandderwelt", "5", true);
         }
       }
@@ -232,6 +247,7 @@ void loop() {
             pixels.setPixelColor(i, minus4[0], minus4[1], minus4[2]);
             pixels.setBrightness(255);
             pixels.show();
+           //MQTT Zustand der Welt Wert schicken
             mqttClient.publish("Moodlicht/zustandderwelt", "-4", true);
           }
           break;
@@ -239,6 +255,7 @@ void loop() {
           for (int i = 0; i < 16; i++) {
             pixels.setPixelColor(i, minus3[0], minus3[1], minus3[2]);
             pixels.show();
+           //MQTT Zustand der Welt Wert schicken
             mqttClient.publish("Moodlicht/zustandderwelt", "-3", true);
           }
           break;
@@ -247,6 +264,7 @@ void loop() {
             pixels.setPixelColor(i, minus2[0], minus2[1], minus2[2]);
             pixels.setBrightness(255);
             pixels.show();
+           //MQTT Zustand der Welt Wert schicken
             mqttClient.publish("Moodlicht/zustandderwelt", "-2", true);
           }
           break;
@@ -255,6 +273,7 @@ void loop() {
             pixels.setPixelColor(i, minus1[0], minus1[1], minus1[2]);
             pixels.setBrightness(255);
             pixels.show();
+           //MQTT Zustand der Welt Wert schicken
             mqttClient.publish("Moodlicht/zustandderwelt", "-1", true);
           }
           break;
@@ -263,6 +282,7 @@ void loop() {
             pixels.setPixelColor(i, neutral[0], neutral[1], neutral[2]);
             pixels.setBrightness(255);
             pixels.show();
+           //MQTT Zustand der Welt Wert schicken
             mqttClient.publish("Moodlicht/zustandderwelt", "0", true);
           }
           break;
@@ -271,6 +291,7 @@ void loop() {
             pixels.setPixelColor(i, plus1[0], plus1[1], plus1[2]);
             pixels.setBrightness(255);
             pixels.show();
+           //MQTT Zustand der Welt Wert schicken
             mqttClient.publish("Moodlicht/zustandderwelt", "1", true);
           }
           break;
@@ -279,6 +300,7 @@ void loop() {
             pixels.setPixelColor(i, plus2[0], plus2[1], plus2[2]);
             pixels.setBrightness(255);
             pixels.show();
+           //MQTT Zustand der Welt Wert schicken
             mqttClient.publish("Moodlicht/zustandderwelt", "2", true);
           }
           break;
@@ -287,6 +309,7 @@ void loop() {
             pixels.setPixelColor(i, plus3[0], plus3[1], plus3[2]);
             pixels.setBrightness(255);
             pixels.show();
+           //MQTT Zustand der Welt Wert schicken
             mqttClient.publish("Moodlicht/zustandderwelt", "3", true);
           }
           break;
@@ -295,6 +318,7 @@ void loop() {
             pixels.setPixelColor(i, plus4[0], plus4[1], plus4[2]);
             pixels.setBrightness(255);
             pixels.show();
+           //MQTT Zustand der Welt Wert schicken
             mqttClient.publish("Moodlicht/zustandderwelt", "4"), true;
           }
           break;
