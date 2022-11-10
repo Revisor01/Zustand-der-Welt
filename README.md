@@ -85,15 +85,15 @@ const char* password =  "WLAN-PASSWORD";`
 * Hier können Sie die Farben für die jeweiligen Werte anpassen.
 * Sie müssen die Werte als RGB Werte eintragen. Dafür können Sie diesen Farbwähler verwenden und tragen Sie die Werte im Format: `{ROT, GELB, GRÜN}` ein. (https://colorpicker.fr/app/)
 
-### Option: MQTT
-#### MQTT Broker verbinden
+## Option: MQTT
+### MQTT Broker verbinden
 * Suchen Sie im Code nach: `//MQTT Verbindungseinstellungen vornehmen`
 * Passen Sie nachfolgend die Werte für: IP, PORT, USER, PASSWORT an.
 * Suchen Sie im Code nach: `//Funktion MQTT Serververbindung (WERTE anpassen). Wird später im Loop aufgerufen.
 `
 * Passen Sie nachfolgend die Werte für: IP, PORT, USER, PASSWORT an.
 
-#### MQTT Nachricht Anpassungen
+### MQTT Nachricht Anpassungen
 Folgende Informationen werden an MQTT geschickt und können angepasst werden.
 
 ```
@@ -137,3 +137,6 @@ https://arduinojson.org/v6/assistant/#/step1
 
 ## Option: WebSerial
 Mittels IP-Adresse kann die Webansicht der Analyse im Browser aufgerufen werden.
+
+# Copyright
+Die Lampe wurde aufgrund einer [Idee](https://polluxlabs.net/esp8266-projekte/pruefe-die-nachrichten-mit-einer-sentimentanalyse/) von polluxlabs.net entwickelt und erweitert.
