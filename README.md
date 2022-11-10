@@ -21,26 +21,23 @@ Es sind vier Skripte für die Lampe mit unterschiedlichem Funktionsumfang vorhan
 * NeoPixel Ring
 * Mini USB Kabel und Stecker
 
+## Zusammenbau der Hardware
+* Verbinden Sie den NeoPixel Ring mit dem ESP32 Board
+* Schließen Sie den 5V Anschluss an VIN an
+* Schließen Sie GND an GND an
+* Schließen Sie den DIN Anschluss an GPIO 15 an. Wenn Sie einen anderen GPIO Pin verwenden müssen Sie dies im Code anpassen
+
 ## Schaltplan
 ![Schaltplan](docs/schaltplan.png)
 
-## Zusammenbau der Hardware
-* Verbinden Sie den NeoPixel Ring mit dem ESP32 Board.
-	* Sofern notwendig löten Sie die Kabel auf die Platine des NeoPixel Ring.
-* Merken Sie sich den GPIO Pin Nummer an den Sie den NeoPixel angeschlossen haben.
-* Schließen Sie den 5V Anschluss an VIN an.
-* Schließen Sie GND an GND an.
-* Sofern Sie nichts am Code ändern wollen schließen Sie den DI anschluss an GPIO 15 an. Direkt neben VIN und GND. Sie können auch jeden anderen Pin verwenden.
-
 ## Installation der Software
-*  Arduino IDE installieren
-*  Für die Installation wird [Arduino IDE](https://www.arduino.cc/en/software) benötigt. Lande Sie sich die passende Version für Ihr Betriebssytem herunter und installieren Sie die Software.
+*  [Arduino IDE](https://www.arduino.cc/en/software) installieren
 * Verbinden Sie das ESP32 Board via USB mit Ihrem Computer
 * Starten Sie die Arduino IDE
-* Wählen Sie das Board aus. Für ein ESP32 Board nutzen Sie FireBeetle-ESP32 als Konfiguration.
-	* Dazu klicken Sie oben in der Leiste auf die Auswahlbox und wählen: `Select other board an port...`
-	* In dem sich öffnenden Menü suchen Sie im Bereich Boards nach FireBeetke-ESP32.
-	* Im Bereich Ports wählen Sie das angeschlossene Board aus.
+* Wählen Sie das Board aus:
+	* Klicken Sie oben in der Leiste auf die Auswahlbox und wählen: `Select other board an port...`
+	* Suchen Sie im Bereich Boards nach FireBeetle-ESP32
+	* Wählen Sie im Bereich Ports das angeschlossene Board aus
 	* Bestätigen Sie mit OK.
 * Das Board ist nun mit Arduino IDE verbunden.
 * Löschen Sie alles was aktuell im Skript steht.
@@ -55,13 +52,54 @@ Es sind vier Skripte für die Lampe mit unterschiedlichem Funktionsumfang vorhan
 * Wenn der Upload erfolgreich war startet der Vorgang der Analyse.
 	* Diesen können Sie im unteren Drittel unter dem Reiter `Serial Log` einsehen.
 
-## Option: MQTT
+## Anpassungen vornehmen
+### Anzahl LEDs
+Sofern Ihr LED Ring nicht aus 16 LEDs besteht müssen Sie diesen Wert im Skript anpassen. <br />
+* Suchen Sie nach: `int leds = 16;`.<br />
+* Passen Sie diesen Wert an die Anzahl der LEDs an.
+
+### GPIO Anschluss
+* Suchen Sie nach: `int ledPin = 15; //GPIO Pin`.<br />
+* Tragen Sie hier die Nummer des GPIO Pin ein an den Sie den NeoPixel Ring angelschlossen haben.
+
+### WLAN Einstellungen
+* Suchen Sie nach:
+`const char* ssid = "WLAN-SSID";
+const char* password =  "WLAN-PASSWORD";`
+* Tragen Sie den Namen Ihres WLAN und das Passwort ein.
+
+### Meaningcloud API
+* Erstellen Sie einen [kostenlosen Account](https://www.meaningcloud.com/developer/create-account) bei meaningcloud.com oder loggen Sie sich mit einem [bestehenden Account](https://www.meaningcloud.com/developer/login) ein.
+* Loggen Sie sich ein und holen Sie sich ihren API Schlüssel z.B. über diesen Link. Sie finden Ihren API Schlüssel im Feld Key. (https://learn.meaningcloud.com/developer/sentiment-analysis/2.1/console)
+* Suchen Sie im Skript nach: `http.begin(clientt, "http://api.meaningcloud.com/sentiment-2.1&key=API-TOKEN&of=json&lang=de&txt=" + article);`
+* Ersetzen Sie API-TOKEN mit Ihrem Key.
+
+### newsAPI.org API
+* Erstellen Sie einen [kostenlosen Account](https://newsapi.org/register) bei newsapi.org.
+* Loggen Sie sich ein und holen Sie sich ihren API Schlüssel unter (https://newsapi.org/account). Sie finden den Schlüssel unter API key.
+* Suchen Sie im Skript nach: `http.begin(clientt, "http://newsapi.org/v2/top-headlines?country=de&apiKey=API_TOKEN");`
+* Ersetzen Sie API-TOKEN mit Ihrem API key.
+
+## Option: Farben anpassen
+* Suchen Sie nach: `int minus5[] = {168, 0, 0};`
+* Hier können Sie die Farben für die jeweiligen Werte anpassen.
+* Sie müssen die Werte als RGB Werte eintragen. Dafür können Sie diesen Farbwähler verwenden und tragen Sie die Werte im Format: `{ROT, GELB, GRÜN}` ein. (https://colorpicker.fr/app/)
+
+### Option: MQTT
+#### MQTT Broker verbinden
+* Suchen Sie im Code nach: `//MQTT Verbindungseinstellungen vornehmen`
+* Passen Sie nachfolgend die Werte für: IP, PORT, USER, PASSWORT an.
+* Suchen Sie im Code nach: `//Funktion MQTT Serververbindung (WERTE anpassen). Wird später im Loop aufgerufen.
+`
+* Passen Sie nachfolgend die Werte für: IP, PORT, USER, PASSWORT an.
+
+#### MQTT Nachricht Anpassungen
 Folgende Informationen werden an MQTT geschickt und können angepasst werden.
 
 ```
 {
-  "name": "Zustand der Welt",
-  "state_topic": "Moodlicht/zustandderwelt",
+  "name": "Segenszustand der Welt",
+  "state_topic": "Moodlicht/segenszustandderwelt",
   "force_update": true,
   "availability_topic": "Moodlicht/status",
   "payload_available": "online",
@@ -80,19 +118,22 @@ Folgende Informationen werden an MQTT geschickt und können angepasst werden.
 }
 ```
 
-Diese Topic muss in JSON Format serialisiert werden. Das kann über diese Seite geschehen.
+Wenn Sie Änderungen an dieser MQTT Nachricht vornehmen muss diese ins JSON Format serialisiert werden. Dabei hilft diese Seite.
 
 https://arduinojson.org/v6/assistant/#/step1
 
 - Im ersten Schritt muss Prozessor, Mode und Output type definiert werden.
-	- `ESP32`
-	- `Serialize`
-	- `char[N]`
+	- Prozessor: `ESP32`
+	- Mode: `Serialize`
+	- Output: `char[N]`
 
-- Im zweiten Schritt muss die angepasste Information eingefügt werden.
+- Im zweiten Schritt muss die angepasste Nachricht eingefügt werden.
 - Im dritten Schritt wird die erforderliche Größe der Nachricht in bytes angegeben. Dieser Wert ist notwendig und beträgt bei der vorgeschlagene Nachricht 384.
 - Im vierten Schritt wird der Programmcode für die MQTT Nachricht ausgegeben und kann an der richtigen Stelle im Dokument eingefügt werden.
-
+- Suchen Sie im Code nach: `char out[384];`
+- Passen Sie diesen Wert an den Wert aus Schritt 3 an.
+- Suchen Sie im Code nach ` //MQTT Nachricht definieren`
+- Ersetzten Sie den nachfolgenden Code durch den Wert aus Schritt 4
 
 ## Option: WebSerial
-Mittels IP-Adresse kann die Webansicht der Analyse aufgerufen werden.
+Mittels IP-Adresse kann die Webansicht der Analyse im Browser aufgerufen werden.

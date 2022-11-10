@@ -42,8 +42,8 @@ PubSubClient mqttClient(wifiClient);
 //MQTT Verbindungseinstellungen vornehmen
 const char* clientID = "Moodlicht";
 const char* mqtt_server = "MQTT-IP";
-const int mqtt_port = 1883;
-const char* mqtt_user = "MQTT_USER";
+const int mqtt_port = MQTT-PORT; //Standard ist 1883
+const char* mqtt_user = "MQTT-USER";
 const char* mqtt_password = "MQTT-PASSWORD";
 
 //MQTT Nachricht Zwischenspeichergröße definieren
@@ -60,7 +60,7 @@ AsyncWebServer server(80);
 
 //Funktion MQTT Serververbindung (WERTE anpassen). Wird später im Loop aufgerufen.
 void connectToMQTT() {
- mqttClient.setServer("MQTT-IP", 1883);//MQTT Server, - Port
+ mqttClient.setServer("MQTT-IP", MQTT-PORT);//MQTT Server, - Port
   mqttClient.setBufferSize(512);
   if (mqttClient.connect("Moodlicht" , "MQTT-USER", "MQTT-PASSWORD")) {
     Serial.println("MQTT verbunden");
