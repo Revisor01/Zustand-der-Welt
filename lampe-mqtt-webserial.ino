@@ -98,7 +98,7 @@ void getSentiment() {
 
     Serial.println(score_tag);
     WebSerial.println("Analyse: " + score_tag);
-   
+
 //Punkte für Bewertungen festlegen
     if (score_tag == "P+") {
       sentiment += 3;
@@ -113,7 +113,7 @@ void getSentiment() {
       sentiment -= 2;
     }
   }
-  
+
   else {
     Serial.println("Bad HTTP Request");
   }
@@ -123,12 +123,12 @@ void getSentiment() {
 
 //Allgemeine Einstellungen anwenden
 void setup() {
- 
+
   pixels.begin();
   pixels.setBrightness(255);
 
   pinMode (15, OUTPUT); //LED Pin
- 
+
   Serial.begin(115200);
   WiFi.begin(ssid, password);
 
@@ -137,7 +137,7 @@ void setup() {
     Serial.println("Verbinde...");
   }
   Serial.println("Verbunden!");
-  	
+
   WebSerial.begin(&server);
   server.begin();
 
@@ -159,7 +159,7 @@ void setup() {
   JsonArray device_connections_0 = device["connections"].createNestedArray();
   device_connections_0.add("mac");
   device_connections_0.add("7C9EBD371680");
-  
+
   serializeJson(doc, out);
   Serial.println(out);
 }
@@ -177,7 +177,7 @@ void loop() {
     int httpCode = http.GET();
 
     if (httpCode == 200) {
-      
+
       String payload = http.getString();
 
       const size_t capacity = JSON_ARRAY_SIZE(20) + 20 * JSON_OBJECT_SIZE(2) + JSON_OBJECT_SIZE(3) + 20 * JSON_OBJECT_SIZE(8) + 16600;
@@ -195,7 +195,7 @@ void loop() {
       int noHeadlines = doc["totalResults"];
 
       //Durch Überschriften loopen und Wertung abrufen
-      for (int i = 0; i < 15; i++) {        
+      for (int i = 0; i < 15; i++) {
         //Überschriften von NewsAPI holen
         JsonArray articles = doc["articles"];
 
@@ -206,7 +206,7 @@ void loop() {
         article = String(articles_number_title);
         Serial.println(article);
         WebSerial.println(article);
-        
+
         article.replace(" ", "%20");
         Serial.println(article);
         getSentiment();
@@ -216,12 +216,12 @@ void loop() {
       Serial.println(sentiment);
       WebSerial.println("Zustand der Welt:");
       WebSerial.println(sentiment);
-     
+
       //MQTT Geräte verbinden und Standardwerte schicken
       connectToMQTT();
       mqttClient.publish("Moodlicht/status", "online", true);
       mqttClient.publish("homeassistant/sensor/Moodlicht/zustandderwelt/config", out, true);
-      
+
       //Ergebnis der Analyse via LED und MQTT ausgeben
       if (sentiment <= -5) {
         for (int i = 0; i < 16; i++) {
