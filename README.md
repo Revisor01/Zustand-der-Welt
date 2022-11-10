@@ -1,7 +1,7 @@
 # Segenszustand der Welt
-Die Lampe zeigt den Segenszustand der Welt.<br />
-Wir glauben, dass Sie dabei helfen kann aufmerksam zu werden für die guten Nachrichten die viel zu häufig keine Beachtung finden. Dabei bleibt es den Nutzer:innen verschlossen welche Nachrichten auf welche Weise bewertet wurde. Lediglich die Farbe gibt einen Hinweis auf den aktuellen Zustand. Es ist den Nutzer:innen freigestellt selber nach Nachrichten zu suchen oder nicht. Die Lampe ist als ein andauernder Begleiter konzipiert.<br />
-Segen wird so sichtbar ohne explizit zu machen wann, wo und wie etwas Gutes oder Schlechtes passiert ist.
+Das Moodlicht zeigt den Segenszustand der Welt.<br /><br />
+Es kann dabei helfen aufmerksam zu werden für die guten Nachrichten die viel zu häufig keine Beachtung finden. Dabei bleibt es den Nutzer:innen unverfügbar welche Nachrichten auf welche Weise bewertet werden. Lediglich die Farbe gibt einen Hinweis auf den aktuellen Zustand. Es ist den Nutzer:innen freigestellt selber nach guten und schlechten Nachrichten zu suchen die zu diesem Ergebniss geführt haben. Die Lampe ist als ein unauffälliger Alltagsbegleiter konzipiert.<br /><br />
+Segen in der Welt wird auf diese Weise sichtbar ohne explizit machen zu müssen wann, wo und wie etwas Gutes oder Schlechtes passiert ist.
 
 ## Funktionsweise
 Die Lampe ruft via [NewsAPI.org](newsapi.org) die neusten *Schlagzeile* aus Deutschland hab. [NewsAPI.org](newsapi.org) greift dabei insgesamt auf mehr als 50 Webseiten zu und ließt nie aktuellste *Schlagzeile* jeder Seite aus. Die erste *25 Schlagzeilen* werden mittels Sentimentanalyse via [meaningcloud.com](https://www.meaningcloud.com/developer/sentiment-analysis) bewertet. Den *Schlagzeilen* werden dabei die Werte von -2, -1, 0, 1, 2 zugewiesen. Diese Werte werden miteinander addiert und so der aktuelle Wert für den Segenszustand der Welt berechnet. Der so errechnete Wert wird via 7er oder 11er Farbskala an den LED Ring ausgegeben. Dieser Vorgang wiederholt sich alle 30 Minuten. <br />
@@ -25,7 +25,7 @@ Es sind vier Skripte für die Lampe mit unterschiedlichem Funktionsumfang vorhan
 * Verbinden Sie den NeoPixel Ring mit dem ESP32 Board
 * Schließen Sie den 5V Anschluss an VIN an
 * Schließen Sie GND an GND an
-* Schließen Sie den DIN Anschluss an GPIO 15 an. Wenn Sie einen anderen GPIO Pin verwenden müssen Sie dies im Code anpassen
+* Schließen Sie den DIN Anschluss an GPIO 15 an. Wenn Sie einen anderen GPIO Pin verwenden müssen Sie dies im Skript anpassen
 
 ## Schaltplan
 ![Schaltplan](docs/schaltplan.png)
@@ -54,42 +54,40 @@ Es sind vier Skripte für die Lampe mit unterschiedlichem Funktionsumfang vorhan
 
 ## Anpassungen vornehmen
 ### Anzahl LEDs
-Sofern Ihr LED Ring nicht aus 16 LEDs besteht müssen Sie diesen Wert im Skript anpassen. <br />
-* Suchen Sie nach: `int leds = 16;`.<br />
-* Passen Sie diesen Wert an die Anzahl der LEDs an.
+Sofern Ihr LED Ring nicht aus 16 LEDs besteht müssen Sie diesen Wert im Skript anpassen.
+* Suchen Sie im Skript nach: `//Anzahl der LEDs`.
+* Passen Sie nachfolgenden den Wert an die Anzahl der LEDs an.
 
 ### GPIO Anschluss
-* Suchen Sie nach: `int ledPin = 15; //GPIO Pin`.<br />
-* Tragen Sie hier die Nummer des GPIO Pin ein an den Sie den NeoPixel Ring angelschlossen haben.
+* Suchen Sie im Skript nach: `//GPIO Pin, an dem der NeoPixel auf dem ESP32 Board angeschlossen ist`.
+* Tragen Sie nachfolgenden die Nummer des GPIO Pin ein, an den Sie den NeoPixel Ring angeschlossen haben.
 
 ### WLAN Einstellungen
-* Suchen Sie nach:
-`const char* ssid = "WLAN-SSID";
-const char* password =  "WLAN-PASSWORD";`
-* Tragen Sie den Namen Ihres WLAN und das Passwort ein.
+* Suchen Sie im Skript nach: `//WLAN Einstellungen vornehmen`
+* Tragen Sie nachfolgenden den Namen Ihres WLAN und das Passwort ein.
 
 ### Meaningcloud API
 * Erstellen Sie einen [kostenlosen Account](https://www.meaningcloud.com/developer/create-account) bei meaningcloud.com oder loggen Sie sich mit einem [bestehenden Account](https://www.meaningcloud.com/developer/login) ein.
 * Loggen Sie sich ein und holen Sie sich ihren API Schlüssel z.B. über diesen Link. Sie finden Ihren API Schlüssel im Feld Key. (https://learn.meaningcloud.com/developer/sentiment-analysis/2.1/console)
-* Suchen Sie im Skript nach: `http.begin(clientt, "http://api.meaningcloud.com/sentiment-2.1&key=API-TOKEN&of=json&lang=de&txt=" + article);`
-* Ersetzen Sie API-TOKEN mit Ihrem Key.
+* Suchen Sie im Skript nach: `//Meaningcloud API`
+* Ersetzen Sie nachfolgend API-TOKEN mit Ihrem API Key.
 
 ### newsAPI.org API
 * Erstellen Sie einen [kostenlosen Account](https://newsapi.org/register) bei newsapi.org.
 * Loggen Sie sich ein und holen Sie sich ihren API Schlüssel unter (https://newsapi.org/account). Sie finden den Schlüssel unter API key.
-* Suchen Sie im Skript nach: `http.begin(clientt, "http://newsapi.org/v2/top-headlines?country=de&apiKey=API_TOKEN");`
-* Ersetzen Sie API-TOKEN mit Ihrem API key.
+* Suchen Sie im Skript nach: `//NewsAPI API`
+* Ersetzen Sie nachfolgend API-TOKEN mit Ihrem API Key.
 
 ## Option: Farben anpassen
-* Suchen Sie nach: `int minus5[] = {168, 0, 0};`
-* Hier können Sie die Farben für die jeweiligen Werte anpassen.
+* Suchen Sie im Skript nach: `//Farben festlegen`
+* Passen Sie die Farben für die jeweiligen Werte an.
 * Sie müssen die Werte als RGB Werte eintragen. Dafür können Sie diesen Farbwähler verwenden und tragen Sie die Werte im Format: `{ROT, GELB, GRÜN}` ein. (https://colorpicker.fr/app/)
 
 ## Option: MQTT
 ### MQTT Broker verbinden
-* Suchen Sie im Code nach: `//MQTT Verbindungseinstellungen vornehmen`
+* Suchen Sie im Skript nach: `//MQTT Verbindungseinstellungen vornehmen`
 * Passen Sie nachfolgend die Werte für: IP, PORT, USER, PASSWORT an.
-* Suchen Sie im Code nach: `//Funktion MQTT Serververbindung (WERTE anpassen). Wird später im Loop aufgerufen.
+* Suchen Sie im Skript nach: `//Funktion MQTT Serververbindung (WERTE anpassen). Wird später im Loop aufgerufen.
 `
 * Passen Sie nachfolgend die Werte für: IP, PORT, USER, PASSWORT an.
 
@@ -118,9 +116,7 @@ Folgende Informationen werden an MQTT geschickt und können angepasst werden.
 }
 ```
 
-Wenn Sie Änderungen an dieser MQTT Nachricht vornehmen muss diese ins JSON Format serialisiert werden. Dabei hilft diese Seite.
-
-https://arduinojson.org/v6/assistant/#/step1
+Wenn Sie Änderungen an dieser MQTT Nachricht vornehmen, muss diese ins JSON Format serialisiert werden. Dabei hilft diese Seite. (https://arduinojson.org/v6/assistant/#/step1)
 
 - Im ersten Schritt muss Prozessor, Mode und Output type definiert werden.
 	- Prozessor: `ESP32`
@@ -130,10 +126,10 @@ https://arduinojson.org/v6/assistant/#/step1
 - Im zweiten Schritt muss die angepasste Nachricht eingefügt werden.
 - Im dritten Schritt wird die erforderliche Größe der Nachricht in bytes angegeben. Dieser Wert ist notwendig und beträgt bei der vorgeschlagene Nachricht 384.
 - Im vierten Schritt wird der Programmcode für die MQTT Nachricht ausgegeben und kann an der richtigen Stelle im Dokument eingefügt werden.
-- Suchen Sie im Code nach: `char out[384];`
-- Passen Sie diesen Wert an den Wert aus Schritt 3 an.
-- Suchen Sie im Code nach ` //MQTT Nachricht definieren`
-- Ersetzten Sie den nachfolgenden Code durch den Wert aus Schritt 4
+- Suchen Sie im Skript nach: `//MQTT Nachricht Zwischenspeichergröße definieren`
+- Passen Sie nachfolgend den Wert entsprechend Schritt 3 an
+- Suchen Sie im Skript nach ` //MQTT Nachricht definieren`
+- Ersetzten Sie den nachfolgenden Code entsprechend Schritt 4
 
 ## Option: WebSerial
 Mittels IP-Adresse kann die Webansicht der Analyse im Browser aufgerufen werden.
