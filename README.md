@@ -11,20 +11,27 @@ Um die *Schlagzeilen* und den Vorgang der Bewertung einsehen zu können sind die
 # Installation
 ## Skripte
 Es sind vier Skripte für die Lampe mit unterschiedlichem Funktionsumfang vorhanden:
-1. Lampe inkl. MQTT und Webserial
-2. Lampe inkl. Webserial
-3. Lampe inkl. MQTT
-4. Lampe
+1. [Lampe inkl. MQTT und Webserial](/lampe-mqtt-webserial.ino)
+2. [Lampe inkl. Webserial](/lampe-webserial.ino)
+3. [Lampe inkl. MQTT](/lampe-mqtt.ino)
+4. [Lampe](/lampe.ino)
 
 ## Hardware
 * ESP32
 * NeoPixel Ring
-* Mini USB Kabel und Charger
+* Mini USB Kabel und Stecker
+
+## Schaltplan
+![Schaltplan](docs/schaltplan.png)
 
 ## Zusammenbau der Hardware
 * Verbinden Sie den NeoPixel Ring mit dem ESP32 Board.
 	* Sofern notwendig löten Sie die Kabel auf die Platine des NeoPixel Ring.
 * Merken Sie sich den GPIO Pin Nummer an den Sie den NeoPixel angeschlossen haben.
+* Schließen Sie den 5V Anschluss an VIN an.
+* Schließen Sie GND an GND an.
+* Sofern Sie nichts am Code ändern wollen schließen Sie den DI anschluss an GPIO 15 an. Direkt neben VIN und GND. Sie können auch jeden anderen Pin verwenden.
+
 ## Installation der Software
 *  Arduino IDE installieren
 *  Für die Installation wird [Arduino IDE](https://www.arduino.cc/en/software) benötigt. Lande Sie sich die passende Version für Ihr Betriebssytem herunter und installieren Sie die Software.
@@ -41,6 +48,7 @@ Es sind vier Skripte für die Lampe mit unterschiedlichem Funktionsumfang vorhan
 	* Passen Sie das Skript an:
 		* WLAN (notwendig)
 		* NewsAPI und Meaningcloud API Keys (notwendig)
+		* LED Anzahl anpassen (notwendig)
 		* MQTT (wenn gewünscht)
 * Drücken Sie oben links auf Upload
 * Damit der Upload startet halten Sie am ESP32 Board den Knopf `boot` gedrückt bis der Vorgang auf dem Rechner startet.
