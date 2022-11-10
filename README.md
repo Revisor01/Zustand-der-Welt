@@ -1,12 +1,15 @@
 # Segenszustand der Welt
-Das Moodlicht zeigt den Segenszustand der Welt.<br /><br />
-Es kann dabei helfen aufmerksam zu werden für die guten Nachrichten die viel zu häufig keine Beachtung finden. Dabei bleibt es den Nutzer:innen unverfügbar welche Nachrichten auf welche Weise bewertet werden. Lediglich die Farbe gibt einen Hinweis auf den aktuellen Zustand. Es ist den Nutzer:innen freigestellt selber nach guten und schlechten Nachrichten zu suchen die zu diesem Ergebniss geführt haben. Die Lampe ist als ein unauffälliger Alltagsbegleiter konzipiert.<br /><br />
+Das Moodlicht zeigt den Segenszustand der Welt.<br />
+<img src="/docs/moodlicht1.jpg" width="30%" height="30%">&nbsp;&nbsp;&nbsp;<img src="/docs/moodlicht2.jpg" width="30%" height="30%">&nbsp;&nbsp;&nbsp;<img src="/docs/moodlicht3.jpg" width="30%" height="30%"><br />
+Es kann dabei helfen aufmerksam zu werden für die guten Nachrichten die viel zu häufig keine Beachtung finden. Dabei bleibt es den Nutzer:innen unverfügbar welche Nachrichten auf welche Weise bewertet werden. Lediglich die Farbe gibt einen Hinweis auf den aktuellen Zustand. Es ist den Nutzer:innen freigestellt selber nach guten und schlechten Nachrichten zu suchen die zu diesem Ergebnis geführt haben. Die Lampe ist als ein unauffälliger Alltagsbegleiter konzipiert.<br /><br />
 Segen in der Welt wird auf diese Weise sichtbar ohne explizit machen zu müssen wann, wo und wie etwas Gutes oder Schlechtes passiert ist.
 
 ## Funktionsweise
 Die Lampe ruft via [NewsAPI.org](newsapi.org) die neusten *Schlagzeile* aus Deutschland hab. [NewsAPI.org](newsapi.org) greift dabei insgesamt auf mehr als 50 Webseiten zu und ließt nie aktuellste *Schlagzeile* jeder Seite aus. Die erste *25 Schlagzeilen* werden mittels Sentimentanalyse via [meaningcloud.com](https://www.meaningcloud.com/developer/sentiment-analysis) bewertet. Den *Schlagzeilen* werden dabei die Werte von -2, -1, 0, 1, 2 zugewiesen. Diese Werte werden miteinander addiert und so der aktuelle Wert für den Segenszustand der Welt berechnet. Der so errechnete Wert wird via 7er oder 11er Farbskala an den LED Ring ausgegeben. Dieser Vorgang wiederholt sich alle 30 Minuten.<br /><br />
-Um den Segenszustand der Welt als Statistik ausgegeben zu können, wird der Wert via MQTT ausgegeben. Dazu muss ein MQTT Broker (https://mosquitto.org/) im Netzwerk verfügbar sein. Dieser Wert kann dann via Home Assistant(https://www.home-assistant.io/) ausgegeben werden.<br /><br />
+Um den Segenszustand der Welt als Statistik ausgegeben zu können, wird der Wert via MQTT ausgegeben. Dazu muss ein MQTT Broker (https://mosquitto.org/) im Netzwerk verfügbar sein. Dieser Wert kann dann via Home Assistant(https://www.home-assistant.io/) ausgegeben werden.
+<img src="/docs/statistik.jpg" width="50%" height="50%"><br />
 Um die *Schlagzeilen* und den Vorgang der Bewertung einsehen zu können sind die Log Dateien via [WebSerial](https://www.arduino.cc/reference/en/libraries/webserial/) im Browser auslesbar. Auslesen ist nur möglich im Moment der Datenabfrage.
+![Ansicht WebSerial](docs/webserial.jpg)
 
 # Installation
 ## Skripte
@@ -132,7 +135,7 @@ Wenn Sie Änderungen an dieser MQTT Nachricht vornehmen, muss diese ins JSON For
 - Ersetzten Sie den nachfolgenden Code entsprechend Schritt 4
 
 ## Option: WebSerial
-Mittels IP-Adresse kann die Webansicht der Analyse im Browser aufgerufen werden.
+Mittels IP-Adresse XXX.XXX.XXX.XXX/webserial kann die Webansicht der Analyse im Browser aufgerufen werden.
 
 # Copyright
 Die Lampe wurde aufgrund einer [Idee](https://polluxlabs.net/esp8266-projekte/pruefe-die-nachrichten-mit-einer-sentimentanalyse/) von polluxlabs.net entwickelt und erweitert.
